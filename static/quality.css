@@ -84,3 +84,13 @@ input[type="text"], .test select {
 .monospace {
     font-family: monospace;
 }
+
+#text_field {
+    max-width: 750px;
+    font-size: 18px;
+}
+
+#question {
+    max-width: 750px;
+    font-size: 18px;
+}

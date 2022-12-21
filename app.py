@@ -21,12 +21,12 @@ def read_questions():
     qq = open('./secret/questions.txt', 'r', encoding='utf8').read().split('========')
     cont = 1
     for q in qq:
-        lines = [x for x in q.split('\n') if len(x) > 0]
+        lines = [x.strip() for x in q.split('\n') if len(x.strip()) > 0]
         if len(lines) == 0:
             continue
         assert len(lines) == 5, f'Incorrect form, {cont} question'
-        questions[cont] = {'question': lines[0],
-                           'options': [['A', 'B', 'C', 'D'][i-1] + ') ' + lines[i] for i in range(1, 5)]}
+        questions[cont] = {'question': str(cont) + '. ' + lines[0],
+                           'options': [['A', 'B', 'C', 'D'][i-1] + '. ' + lines[i] for i in range(1, 5)]}
         cont += 1
     assert len(questions) > 0, f'No questions = no game'
     return
