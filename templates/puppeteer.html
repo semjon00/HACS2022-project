@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DEMO</title>
+    <script src="{{ url_for('static', filename='good_boy_script.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quality.css') }}">
+</head>
+<body>
+<b>Mr. puppeteer's C&C server</b><br>
+<label for="command">Command:</label>
+<input autocomplete="off" type="text" id="command" placeholder="command">
+<button id="cmd_button" onclick="caacPuppeteer()">Send command</button>
+
+<br/><br/><br/><br/>
+
+<table><tbody>
+  <tr><th>Command</th><th>Syntax</th></tr>
+  <tr><td>Display text</td><td class="monospace">   t:Your text here</td></tr>
+  <tr><td>Ask question</td><td class="monospace">   q:1</td></tr>
+  <tr><td>To show the image</td><td class="monospace">   i:true</td></tr>
+  <tr><td>Show question stats</td><td class="monospace">   s:1</td></tr>
+  <tr><td></td><td class="monospace"></td></tr>
+</tbody></table>
+
+
+<span id="loader_constants" style="visibility: hidden;">
+    <span id="mode">puppeteer</span>
+    <span id="identity">{{ room }}</span>
+    <span id="room">{{ room }}</span>
+</span>
+</body>
+</html>

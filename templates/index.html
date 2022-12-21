@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DEMO</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='quality.css') }}">
+</head>
+<body>
+    <h2>We are one: MVP DEMO</h2>
+    <form action="/i_am_in" method="post">
+        <label for="name">Name:</label>
+        <input autocomplete="off" type="text" id="name" name="name"><br><br>
+        <label for="room">Room:</label>
+        <input autocomplete="off" type="text" id="room" name="room"><br><br>
+        <button>CONNECT</button>
+    </form>
+</body>
+</html>

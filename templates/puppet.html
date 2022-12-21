@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DEMO</title>
+    <script src="{{ url_for('static', filename='good_boy_script.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quality.css') }}">
+</head>
+<body>
+<h2 id="header">Quick demo!</h2>
+<h3 id="text_field">Room master has not connected yet...</h3>
+
+<span style="display: none;" id="button_container" class="container">
+    <span id="question">Waiting for a question...</span>
+    <button id="bn0" class="col0" onclick="caacPuppet(0)">A?</button>
+    <button id="bn1" class="col1" onclick="caacPuppet(1)">B?</button>
+    <button id="bn2" class="col2" onclick="caacPuppet(2)">C?</button>
+    <button id="bn3" class="col3" onclick="caacPuppet(3)">D?</button>
+</span>
+
+<img id="image" style="display: none;" alt="Image" src="{{ url_for('static', filename='image.png') }}" width="500" height="500">
+
+<span style="display: none;" id="stat_container" class="container">
+    <button disabled class="col0" id="stat0"></button>
+    <button disabled class="col1" id="stat1"></button>
+    <button disabled class="col2" id="stat2"></button>
+    <button disabled class="col3" id="stat3"></button>
+</span>
+
+<span id="loader_constants" style="display: none;">
+    <span id="mode">puppet</span>
+    <span id="identity">{{ identity }}</span>
+    <span id="room">{{ room }}</span>
+</span>
+</body>
+</html>
