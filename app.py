@@ -1,26 +1,24 @@
-# !! Has known critical security vulnerabilities !!
-# Trash code ahead! Trash design ahead! This is a speedrun, we are not building a castle here.
+# Suboptimal design, may be insecure.
+# This is a speedrun, we are not building a castle here.
 
-# https://www.digitalocean.com/community/tutorials/how-to-use-templates-in-a-flask-application
-# https://stackoverflow.com/questions/22947905/flask-example-with-post
+import copy
 import os
 import random
+import time
+
 from flask import Flask, request, render_template, jsonify, url_for, send_from_directory
 
 app = Flask(__name__)
 
-PUPPETEER_S_SECRET = 'adm1n'
-
-# Logic goes here
+# A better split would be across rooms
 puppets = {}
 puppeteers = {}
 questions = {}
 
-
 # ################
 
 def read_questions():
-    qq = open('./static/questions.txt').read().split('========')
+    qq = open('./secret/questions.txt', 'r', encoding='utf8').read().split('========')
     cont = 1
     for q in qq:
         lines = [x for x in q.split('\n') if len(x) > 0]
@@ -43,25 +41,32 @@ def index():
 def i_am_in():
     if len(questions) == 0:
         read_questions()
+    if len(puppets) > 500 or len(puppeteers) > 500:  # fast and ugly patch against O(n^2) DoS
+        puppets.clear()
+        puppeteers.clear()
 
     name = request.form['name']
     room = request.form['room']
-    if name != PUPPETEER_S_SECRET:
+    if name != 'master':
+        # Yes, people can pick exactly the same display names
         identity = 'h4kker_' + str(random.randint(0, int(1e12)))
-        puppets[identity] = {'name': name, 'room': room, 'answers': {}}
+        puppets[identity] = {'name': name, 'room': room, 'answers': {}, 'created': time.time()}
         return render_template('puppet.html', identity=identity, room=room)
     else:
-        identity = room
+        if room in puppeteers:
+            return jsonify({'status': 'error'})
+        identity = 'ma$ter_' + str(random.randint(0, int(1e12)))
         def_event = {'time': 0, 'type': 't', 'text': 'Waiting for the room master to start...'}
-        puppeteers[identity] = {'events': [def_event]}
-        return render_template('puppeteer.html', room=room)
+        puppeteers[room] = {'identity': identity, 'events': [def_event], 'created': time.time()}
+        return render_template('puppeteer.html', identity=identity, room=room)
 
 
 @app.route('/pool_for_puppets', methods=['GET'])
-def pool_for_puppets():
+def pool_for_puppets():  # Horrible design
     """GET the last event of the room, expects: id and skip"""
     identity = request.args.get('identity')
     skip = int(request.args.get('skip'))
+
     room = puppets[identity]['room']
     if room not in puppeteers:
         return jsonify({'event_index': -1})
@@ -78,16 +83,25 @@ def caac_puppet():
     identity = request.json.get('identity')
     number = request.json.get('number')
     picked = request.json.get('picked')
-    if picked not in range(4) or identity not in puppets:
+
+    if number not in questions or picked not in range(4) or identity not in puppets:
         return jsonify({'status': 'error'})
     puppets[identity]['answers'][number] = picked
     return jsonify({'status': 'ok'})
 
 
 def get_stats(room, question_n):
+    if random.random() < 0.05:  # quick and dirty garbage collection
+        for p in copy.copy(list(puppeteers.keys())):
+            if puppeteers[p]['created'] + 24*60*60 < time.time():
+                del puppeteers[p]
+        for p in copy.copy(list(puppets.keys())):
+            if puppets[p]['created'] + 24*60*60 < time.time():
+                del puppets[p]
+
     stats = 4 * [0]
     for p in puppets.values():
-        if p['room'] == room:
+        if p['room'] == room:  # Bad design
             if question_n in p['answers']:
                 got = p['answers'][question_n]
                 stats[got] += 1
@@ -96,32 +110,32 @@ def get_stats(room, question_n):
 
 @app.route('/caac_puppeteer', methods=['POST'])
 def caac_puppeteer():
-    """Takes POST with room (same as puppeteer_id) and a command (prompt)"""
+    """Takes POST with identity (auth key), room (same as puppeteer_id) and a command (prompt)"""
     prompt = request.json.get('prompt').split(':')
     room = request.json.get('room')
+    identity = request.json.get('identity')
 
-    if len(prompt) != 2:
+    if identity != puppeteers[room]['identity'] or len(prompt) != 2:
         return jsonify({'status': 'error'})
+
     event = {}
     if prompt[0] in ['q', 'question']:
         q_number = int(prompt[1])
         if q_number not in questions:
             return jsonify({'status': 'error'})
-
         event['type'] = 'q'
         event['question'] = questions[q_number]['question']
         event['options'] = questions[q_number]['options']
         event['number'] = int(q_number)
-    elif prompt[0] in ['p', 'picture', 'illustration', 'i']:
+    elif prompt[0] in ['p', 'picture', 'illustration', 'i', 'image']:
         event['type'] = 'p'
-        event['display'] = True if prompt[1] in ['yes', 'y', '1', 'true'] else False
+        event['display'] = True if prompt[1] in ['yes', 'y', '1', 'true'] else False  # unused
         if not event['display']:
             event['display'] = True
     elif prompt[0] in ['s', 'stat', 'stats', 'answers']:
         q_number = int(prompt[1])
         if q_number not in questions:
             return jsonify({'status': 'error'})
-
         event['type'] = 's'
         event['stats'] = get_stats(room, q_number)
         event['question'] = questions[q_number]['question']
@@ -144,5 +158,4 @@ def favicon():
 
 
 if __name__ == '__main__':
-    app.add_url_rule('/favicon.ico', redirect_to=url_for('static', filename='favicon.ico'))
     app.run()

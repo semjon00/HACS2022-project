@@ -58,7 +58,7 @@ function pool_for_puppets() {
     req.send()
 }
 
-function caacPuppet(value) {
+function caac_puppet(value) {
     const req = new XMLHttpRequest()
     req.open("POST", 'caac_puppet', true)
     req.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
@@ -68,14 +68,14 @@ function caacPuppet(value) {
 }
 
 
-function caacPuppeteer() {
+function caac_puppeteer() {
     let text = document.getElementById("command").value
     document.getElementById("command").value = ""
 
     const req = new XMLHttpRequest()
     req.open( "POST", 'caac_puppeteer', true)
     req.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    let data = {'prompt': text, 'room': room}
+    let data = {'prompt': text, 'room': room, 'identity': identity}
     console.log("caacPuppeteer", data)
     req.send(JSON.stringify(data))
 }
