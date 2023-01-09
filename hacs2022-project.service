@@ -1,0 +1,13 @@
+Description=HACS 2022 project
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=admin
+WorkingDirectory=/home/admin/HACS2022-project/
+ExecStart=/home/admin/HACS2022-project/venv/bin/waitress-serve --port=8086 app:app
+
+[Install]
+WantedBy=multi-user.target
