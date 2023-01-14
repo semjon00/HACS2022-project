@@ -1,7 +1,15 @@
+# You need this file to run the server constantly
+# (it will restart when the machine restarts).
+
 # Copy this file to /etc/systemd/system/
 # (or wherever systemd service files are stored on your computer)
 # Then edit the WorkingDirectory and ExecStart fields,
 # so they match the location of the repository
+
+# To activate the project run these commands:
+# sudo systemctl daemon-reload
+# systemctl start hacs2022-project.service
+# systemctl enable hacs2022-project.service
 
 Description=HACS 2022 project
 After=network.target
