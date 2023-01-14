@@ -1,3 +1,8 @@
+# Copy this file to /etc/systemd/system/
+# (or wherever systemd service files are stored on your computer)
+# Then edit the WorkingDirectory and ExecStart fields,
+# so they match the location of the repository
+
 Description=HACS 2022 project
 After=network.target
 StartLimitIntervalSec=0
