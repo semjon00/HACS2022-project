@@ -72,6 +72,11 @@ def pool_for_puppets():  # Horrible design
     room = puppets[identity]['room']
     if room not in puppeteers:
         return jsonify({'event_index': -1})
+    # Long polling to improve performance
+    for sleep in range(15 * 5):
+        if len(puppeteers[room]['events']) != skip:
+            break
+        time.sleep(0.2)
     event_index = len(puppeteers[room]['events'])
     if event_index == skip:
         return jsonify({'event_index': -1})

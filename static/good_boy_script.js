@@ -53,6 +53,11 @@ function pool_for_puppets() {
         if(req.readyState !== 4 || req.status !== 200) return
         console.log("pool_for_puppets output:", JSON.parse(req.responseText))
         apply_event(JSON.parse(req.responseText))
+
+        // Long polling
+        poller = setTimeout(function () {
+            pool_for_puppets()
+        }, 200)
     }
     console.log("pool_for_puppets input:", identity, last_event)
     req.send()
@@ -91,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
     element.remove()
 
     if (mode === "puppet") {
-        poller = setInterval(function () {
+        poller = setTimeout(function () {
             pool_for_puppets()
-        }, 1500)
+        }, 200)
     }
 })
