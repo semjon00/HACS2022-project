@@ -1,5 +1,7 @@
 # Suboptimal design, may be insecure.
 # This is a speedrun, we are not building a castle here.
+# Probably the worst thing about it is that puppets send a request every two seconds, asking whether
+# there is a new command. This creates completely unnecessary load to the server.
 
 import copy
 import os
@@ -91,6 +93,7 @@ def caac_puppet():
 
 
 def get_stats(room, question_n):
+    """This is a really bad piece of code, since it enumerates over all the puppets, not only these that are in the same room"""
     if random.random() < 0.05:  # quick and dirty garbage collection
         for p in copy.copy(list(puppeteers.keys())):
             if puppeteers[p]['created'] + 24*60*60 < time.time():
